@@ -39,8 +39,11 @@ texts_ = [split_string(x) for x in texts]
 # pd.DataFrame(texts_all, columns=["text", "pred", "prob", *range(13)]).to_csv("data.csv")
 
 data = pd.read_csv("data.csv").iloc[:, 1:]
+print(f"{data=}")
+
 for i in range(data.shape[0]):
     d = data.iloc[i, :]
+    print(d)
     text, class_to_explain, prediction_probability = split_string(d["text"]), \
                                                      ["Positive", "Neutral", "Negative"][d["pred"]], d["prob"]
     contribution_values = list(d[3:3 + len(text)])

@@ -20,7 +20,9 @@ class SHAPexplainer:
         # self.model.to(self.device)
 
         sentences = [[self.words_dict[xx] if xx != 0 else "" for xx in x] for x in indexed_words]
-        indexed_tokens, _, _ = self.tknz_to_idx(sentences)
+        indexed_tokens, tokenized_text, _ = self.tknz_to_idx(sentences)
+        # print("indexed_tokens", indexed_tokens)
+        # print(tokenized_text[0])
 
         # ref = self.tweet_tokenizer.tokenize(data[0])
         # data_temp = [ref]
@@ -45,9 +47,11 @@ class SHAPexplainer:
         # indexed_tokens = [self.tokenizer.convert_tokens_to_ids(tt) for tt in tokenized_text]
 
         tokens_tensor = torch.tensor(indexed_tokens)
+        # print("tokens_tensor", tokens_tensor)
         with torch.no_grad():
             outputs = self.model(input_ids=tokens_tensor)
             # logits = outputs[0]
+            # print("outputs", outputs)
             predictions = outputs.detach().cpu().numpy()
         final = [self.softmax(x) for x in predictions]
         return np.array(final)
@@ -75,7 +79,13 @@ class SHAPexplainer:
         idx_dt = [[self.words_dict_reverse[xx] for xx in x] for x in data]
         if not max_seq_len:
             max_seq_len = min(max(len(x) for x in idx_dt), 512)
+            # print("max_seq_len", max_seq_len)
         for i, x in enumerate(idx_dt):
             if len(x) < max_seq_len:
                 idx_dt[i] = x + [0] * (max_seq_len - len(x))
+            elif len(x) > max_seq_len:
+                idx_dt[i] = x[0:max_seq_len]   
+        for i in idx_dt:
+            if len(i) != max_seq_len:
+                raise ValueError("Error in padding: Length mismatch during padding process")
         return np.array(idx_dt), max_seq_len

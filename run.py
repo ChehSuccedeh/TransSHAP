@@ -1,11 +1,14 @@
 import pandas as pd
 from nltk.tokenize import TweetTokenizer
+import numpy as np
 
 # Bag of words
 train_data = pd.read_csv("./models/English_tweet_label.csv")
 train_data = list(train_data["Tweet text"])
+print(np.array(train_data).shape)
 tknzr = TweetTokenizer()
 bag_of_words = set([xx for x in train_data for xx in tknzr.tokenize(x)])
+print(bag_of_words)
 
 from transformers import BertTokenizer, BertForSequenceClassification
 
@@ -16,7 +19,7 @@ class SCForShap(BertForSequenceClassification):
         output = super().forward(input_ids, attention_mask, token_type_ids, position_ids, head_mask, inputs_embeds, labels)
         return output[0]
 
-pretrained_model = "./models/en_balanced_bertbase-g512-epochs3/"
+pretrained_model = "bert-base-uncased"
 tokenizer = BertTokenizer.from_pretrained(pretrained_model, do_lower_case=False)
 model = SCForShap.from_pretrained(pretrained_model)
 
