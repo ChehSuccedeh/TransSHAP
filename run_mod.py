@@ -3,7 +3,7 @@ import numpy as np
 from transformers import RobertaTokenizer, RobertaForSequenceClassification
 from nltk.tokenize import TweetTokenizer
 # Bag of words
-train_data = pd.read_json("../code_classification/data/test_dataset.jsonl", lines=True)
+train_data = pd.read_json("./data/test_dataset.jsonl", lines=True)
 train_data = list(train_data["code"])
 # print(np.array(train_data).shape)
 tknzr = TweetTokenizer()
